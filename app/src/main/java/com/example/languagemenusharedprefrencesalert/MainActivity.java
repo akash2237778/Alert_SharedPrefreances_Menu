@@ -1,6 +1,8 @@
 package com.example.languagemenusharedprefrencesalert;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,34 +13,49 @@ import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    String languageSelected = "English";
+    String languageSelected;
     TextView languageDisplay;
+    SharedPreferences sharedPreferences;
+    int a = 0;
+
+
+    public void storeSharedPrefrences(String language) {
+        sharedPreferences.edit().putString("Last language Selected", language).apply();
+        languageDisplay.setText(language);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        sharedPreferences = this.getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+        languageSelected = sharedPreferences.getString("Last language Selected", null);
+        languageDisplay.setText(languageSelected);
+       // a= Integer.parseInt(sharedPreferences.getString("val a", null));
 
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_file,menu);
+        menuInflater.inflate(R.menu.menu_file, menu);
         return super.onCreateOptionsMenu(menu);
 
-        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.spanish:
                 languageSelected = "Spanish";
-                languageDisplay.setText(languageSelected);
+                storeSharedPrefrences(languageSelected);
+
                 return true;
             case R.id.Hindi:
                 languageSelected = "Hindi";
-                languageDisplay.setText(languageSelected);
+
+                storeSharedPrefrences(languageSelected);
                 return true;
-                default:
-                    languageSelected = "English";
-                    languageDisplay.setText(languageSelected);
-                    return false;
+            default:
+                languageSelected = "English";
+
+                storeSharedPrefrences(languageSelected);
+                return false;
 
         }
 
@@ -48,27 +65,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        languageDisplay = (TextView)findViewById(R.id.langDisplay);
+        languageDisplay = (TextView) findViewById(R.id.langDisplay);
         languageDisplay.setText(languageSelected);
 
-        new AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Select Default Language")
-                .setPositiveButton("Spanish", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        languageSelected = "Spanish";
-                        languageDisplay.setText(languageSelected);
-                    }
-                })
-                .setNegativeButton("Hindi", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        languageSelected = "Hindi";
-                        languageDisplay.setText(languageSelected);
-                    }
-                })
-                .show();
+        if (a == 0) {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Select Default Language")
+                    .setPositiveButton("Spanish", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            languageSelected = "Spanish";
+                            storeSharedPrefrences(languageSelected);
+                            a = 1;
+                            sharedPreferences.edit().putString("val a", String.valueOf(a)).apply();
+                        }
+                    })
+                    .setNegativeButton("Hindi", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            languageSelected = "Hindi";
+                            storeSharedPrefrences(languageSelected);
+                            a = 1;
+                            sharedPreferences.edit().putString("val a", String.valueOf(a)).apply();
+                        }
+                    })
+                    .show();
 
+        }
     }
 }
